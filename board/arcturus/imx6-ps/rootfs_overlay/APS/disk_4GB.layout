@@ -1,0 +1,34 @@
+unit: sectors
+
+# Viking 4GBytes eMMC disk layout
+
+#  (256-16) MBytes - Linux images
+p1 : start=       32768, size=      229376, type=83,
+
+#  256 MBytes - Boot ROOTF
+p2 : start=      262144, size=      524288, type=83,
+
+#  128 MBytes - MbarxDB
+p3 : start=      786432, size=      262144, type=83,
+
+# 3 GBytes - extended
+p4 : start=     1048576, size=     6291456, type=5,
+
+#   64 MBytes - MbarxUI
+p5 : start=     1050624, size=      131072, type=83,
+
+#  512 MBytes - Base ROOTFS
+p6 : start=     1183744, size=     1048576, type=83,
+
+# 1 GByte - Customer CA
+p7 : start=     2234368, size=     2097152, type=83,
+
+#   16 MBytes - Customer Conf
+p8 : start=     4333568, size=       32768, type=83,
+
+#   64 MBytes - Customer Web
+p9 : start=     4368384, size=      131072, type=83,
+
+# and p10     - Customer Snapshots to the end
+
+4501504, , 83

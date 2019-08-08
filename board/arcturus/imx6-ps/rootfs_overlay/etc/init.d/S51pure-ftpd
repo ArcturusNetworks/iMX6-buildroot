@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+# Start pure-ftpd server....
+#
+
+PURE_FTPD_ARGS=--daemonize
+[ -r /etc/default/pure-ftpd ] && . /etc/default/pure-ftpd
+
+start() {
+      printf "Starting pure-ftpd: "
+      start-stop-daemon -S -q -m -b -p /var/run/pure-ftpd.pid \
+			-x /usr/sbin/pure-ftpd -- $PURE_FTPD_ARGS
+      [ $? = 0 ] && echo "OK" || echo "FAIL"
+}
+
+stop() {
+	printf "Stopping pure-ftpd: "
+	start-stop-daemon -K -q -p /var/run/pure-ftpd.pid \
+			  -x /usr/sbin/pure-ftpd
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+}
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    restart|reload)
+	stop
+	start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
