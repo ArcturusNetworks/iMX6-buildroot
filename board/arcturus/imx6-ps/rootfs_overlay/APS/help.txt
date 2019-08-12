@@ -1,0 +1,33 @@
+
+	Operations:
+
+	  1) Auto - partitionig,
+                    rebooting,
+                    formatting,
+                    programming u-boot and images,
+                    set OTP keys and 
+                    lock the device if AutoLock is set to auto mode
+
+	  2) Program u-boot
+
+	  3) Partitioning - re-partitionig based on eMMC size
+
+	  4) Format - format partitions as EXT4
+
+	  5) Program Images
+
+	Settings:
+
+	  6) eMMC size - shows and set eMMC size 4GB or 8GB
+
+	  7) Print OTP keys - print OTP keys from u-boot envar and from OTP
+                              to check if they are in sync
+
+	  8) Set OTP keys from u-boot ENV - program OTP fuses by KEYS from u-boot envar
+
+	  9) Set AutoLoack - set AutoLock in manual or auto mode 
+
+	  Q) Quit
+	  R) Reboot - reboot module (Have to do it after manual re-partitionin.
+	  H) Help - print this help
+

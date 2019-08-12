@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# Start the Arcturus Programmin Station....
+#
+
+mkdir -p /Images
+
+case "$1" in
+  start|"")
+	[ -f /APS/aps_imx6dlv.sh ] && echo "Starting APS: " || exit 1
+	/APS/aps_imx6dlv.sh
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+	;;
+  stop) ;;
+  *)
+	echo "Usage: $0 {start|stop}"
+	exit 1
+esac
+
+exit $?
