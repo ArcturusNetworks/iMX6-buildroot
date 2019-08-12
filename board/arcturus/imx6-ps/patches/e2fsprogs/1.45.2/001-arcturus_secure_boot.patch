@@ -1,0 +1,96 @@
+--- a/misc/e4crypt.c	2019-05-27 22:21:49.000000000 -0400
++++ b/misc/e4crypt.c	2019-08-06 15:32:38.571041836 -0400
+@@ -73,6 +73,7 @@
+ 
+ #define OPT_VERBOSE	0x0001
+ #define OPT_QUIET	0x0002
++#define OPT_SHORT	0x0004
+ 
+ int options;
+ 
+@@ -397,8 +398,9 @@
+ 			       strerror(errno), salt->key_ref_str, argv[x]);
+ 			continue;
+ 		}
+-		printf("Key with descriptor [%s] applied to %s.\n",
+-		       salt->key_ref_str, argv[x]);
++		if ((options & OPT_QUIET) == 0)
++			printf("Key with descriptor [%s] applied to %s.\n",
++			       salt->key_ref_str, argv[x]);
+ 	}
+ }
+ 
+@@ -605,9 +607,13 @@
+ 		}
+ 		exit(1);
+ 	} else {
+-		if ((options & OPT_QUIET) == 0)
+-			printf("Added key with descriptor [%s]\n",
+-			       salt->key_ref_str);
++		if ((options & OPT_QUIET) == 0) {
++			if (options & OPT_SHORT)
++				printf("%s", salt->key_ref_str);
++			else
++				printf("Added key with descriptor [%s]\n",
++				       salt->key_ref_str);
++		}
+ 	}
+ }
+ 
+@@ -653,11 +659,23 @@
+ {
+ 	struct salt *salt;
+ 	char *keyring = NULL;
++	char *sprefix = NULL;
++	int passf = 0;
+ 	int i, opt, pad = 4;
+ 	unsigned j;
+ 
+-	while ((opt = getopt(argc, argv, "k:S:p:vq")) != -1) {
++	while ((opt = getopt(argc, argv, "k:S:s:P:p:vq")) != -1) {
+ 		switch (opt) {
++		case 'P':
++			/* Passphrase. */
++			passf = 1;
++			strncpy(in_passphrase, optarg, (EXT4_MAX_PASSPHRASE_SIZE - 1));
++			options |= OPT_SHORT;
++			break;
++		case 's':
++			/* Specify a sub prefix. */
++			sprefix = optarg;
++			break;
+ 		case 'k':
+ 			/* Specify a keyring. */
+ 			keyring = optarg;
+@@ -694,8 +712,12 @@
+ 	validate_paths(argc, argv, optind);
+ 	for (i = optind; i < argc; i++)
+ 		parse_salt(argv[i], PARSE_FLAGS_FORCE_FN);
+-	printf("Enter passphrase (echo disabled): ");
+-	get_passphrase(in_passphrase, sizeof(in_passphrase));
++	if (!passf) {
++		printf("Enter passphrase (echo disabled): ");
++		get_passphrase(in_passphrase, sizeof(in_passphrase));
++	}
++	if (sprefix)
++		strcat(in_passphrase, sprefix);
+ 	for (j = 0, salt = salt_list; j < num_salt; j++, salt++) {
+ 		pbkdf2_sha512(in_passphrase, salt,
+ 			      EXT4_PBKDF2_ITERATIONS, salt->key);
+@@ -722,11 +744,14 @@
+ 	struct salt saltbuf;
+ 	int c, pad = 4;
+ 
+-	while ((c = getopt (argc, argv, "p:")) != EOF) {
++	while ((c = getopt (argc, argv, "p:q")) != EOF) {
+ 		switch (c) {
+ 		case 'p':
+ 			pad = atoi(optarg);
+ 			break;
++		case 'q':
++			options |= OPT_QUIET;
++			break;
+ 		}
+ 	}
+
+--
